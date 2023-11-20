@@ -63,16 +63,14 @@
     A=[a_{ij}]
 \end{equation*}
 
-\[
-\begin{array}{cc}
-     a_{ij}=\int_a^b \psi_j' \psi_i' dx&\text{if } j\in\{ i-1,i,i+1\}  \\
-     a_{ij}=0&\text{if } j\notin\{ i-1,i,i+1\} 
-\end{array}
-\]
+\begin{gather}
+     a_{ij}=\int_a^b \psi_j' \psi_i' dx \;\;\;\;\text{if } j\in\{ i-1,i,i+1\}  \\
+     a_{ij}=0 \;\;\;\;\text{if } j\notin\{ i-1,i,i+1\} \\
+     b=[b_i], \quad b_{i}=\int_a^b f \psi_i dx \quad
+     i=1,...,N+1 \\
+     b_1 = b_{N+1} = 0 
+\end{gather}
 
-\begin{equation*}
-    b=[b_i], \quad b_{i}=\int_a^b f \psi_i dx \quad i=1,...,N+1
-\end{equation*}
 
 \noindent The functions $\psi_i$ are defined as:
 \[\psi_i= \left\{
