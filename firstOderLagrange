@@ -1,0 +1,86 @@
+\documentclass{article}
+\usepackage[margin=0.9in]{geometry}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+
+\title{Introduction into Finite Elements and Algorithms}
+\author{Group 3}
+\date{November 2023}
+
+
+\begin{document}
+
+\maketitle
+
+\section{Weak form of the problem}
+\noindent Strong form of the problem:
+\[
+\begin{array}{rcl}
+     -u''(x) = f(x)& \forall x\in [0,1] \\
+     u(0)=0& \\
+     u'(1)=0& \\     
+\end{array}
+\]
+
+\noindent If we suppose that $u$ is a solution for the strong form, given any function $v$, it is also true that:
+\begin{equation*}
+    -u''(x)v(x) = f(x)v(x) \quad \forall x\in [0,1]
+\end{equation*}
+
+\noindent If we integrate that expression in [0,1], we arrive at:
+\begin{equation*}
+    -\int_0^1 u''(x)v(x)dx = \int_0^1 f(x)v(x) dx
+\end{equation*}
+
+\noindent For that integrals to be well defined, we assume that $u\in H^2([0,1])$, $v\in H^1([0,1])$ and $f\in L^2([0,1])$. Then, we integrate by parts:
+\begin{equation*}
+    -[u'(x)v(x)]_{x=0}^{1}-\int_0^1 u'(x)v(x)'=dx \int_0^1 f(x)v(x) dx \quad\forall v\in H^1([0,1])
+\end{equation*}
+\begin{equation*}
+    -u'(1)v(1)+u'(0)v(0)+\int_0^1 u'(x)v(x)'=dx \int_0^1 f(x)v(x) dx \quad\forall v\in H^1([0,1])
+\end{equation*}
+
+\noindent To force a solution that verifies the Dirichlet bound conditions, we define:
+\begin{equation*}
+    V=\{ v\in H^1([0,1]) \, : \, v(0)=0\}
+\end{equation*}
+
+\noindent Using that functional space and given that u'(1)=0, we then arrive at the weak form of the problem:
+\begin{equation}
+    \int_0^1 u'(x)v(x)'=dx \int_0^1 f(x)v(x) dx \quad\forall v\in V
+\end{equation}
+
+\section{FEM with first order Lagrange elements}
+\noindent Solve:
+\begin{equation*}
+    Ac=b
+\end{equation*}
+
+\noindent Where:
+\begin{equation*}
+    A=[a_{ij}]
+\end{equation*}
+
+\[
+\begin{array}{cc}
+     a_{ij}=\int_a^b \psi_j' \psi_i' dx&\text{if } j\in\{ i-1,i,i+1\}  \\
+     a_{ij}=0&\text{if } j\notin\{ i-1,i,i+1\} 
+\end{array}
+\]
+
+\begin{equation*}
+    b=[b_i], \quad b_{i}=\int_a^b f \psi_i dx \quad i=1,...,N+1
+\end{equation*}
+
+\noindent The functions $\psi_i$ are defined as:
+\[\psi_i= \left\{
+\begin{array}{rcl}
+\frac{x-x_{i-1}}{h}& \text{if } x\in [x_{i-1}, x_i]\\
+\frac{x_{i+1}-x}{h}& \text{if } x\in [x_{i}, x_{i+1}]\\
+0& \text{if } x\notin [x_{i-1}, x_{i+1}]
+\end{array}\right.\]
+
+
+\end{document}
