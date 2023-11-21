@@ -4,6 +4,9 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage{tikz}
+\usepackage{stanli}
+\usetikzlibrary {arrows.meta,bending}
 
 \title{Introduction into Finite Elements and Algorithms}
 \author{Group 3}
@@ -15,14 +18,60 @@
 \maketitle
 
 \section{Weak form of the problem}
+
+
+\begin{figure}[h]
+\centering
+    \begin{tikzpicture}[domain=0:10,smooth]
+        %\draw[help lines,step =.5](-2 ,-2)grid(10 ,2);
+        \point{a}{0}{0.6};
+        \point{b}{0}{-0.6};
+        \point{c}{0}{0.5};
+        \point{d}{0}{-0.5};
+        \point{e}{10}{0.5};
+        \point{f}{10}{-0.5};
+        \point{o}{0}{-1.5};
+        \draw(0,-1.4)--(0,-1.6);
+        \draw[-{Stealth}](0,-1.5)--(1.1,-1.5);
+        \draw (0.1,-1.35) node[right] {$x,u$};
+        %\node(0,0)node[left]{$x,u$};
+        \support{3}{a}[270];
+        \support{3}{b}[270];
+        \beam{2}{c}{e};
+        \beam{2}{e}{f};
+        \beam{2}{f}{d};
+        \draw(0,0)--(0,3.5);
+        \draw(10,0)--(10,3.5);
+        \draw [{Stealth}-{Stealth}](0,3.3)--(10,3.3);
+        \draw (5,3.5) node[] {$L$};
+        \draw[color=blue]   plot (\x,{sin(\x r)+2})    node[right] {$f(x)$};
+        \draw[color=blue](0,1)--(10,1);
+        \draw[color=blue,-{Stealth}](0,2)--(3.14,2);
+        \draw[color=blue,-{Stealth}](6.28,2)--(9.42,2);
+        \draw[color=blue,-{Stealth}](0,1.5)--(3.67,1.5);
+        \draw[color=blue,-{Stealth}](5.76,1.5)--(9.94,1.5);
+        \draw[color=blue,-{Stealth}](0.52,2.5)--(2.62,2.5);
+        \draw[color=blue,-{Stealth}](6.81,2.5)--(8.9,2.5);
+        \draw[very thick,-{Stealth}](10,0)--(11,0);
+        \draw[{Stealth}-](5,-0.5)--(4,-1.5);
+        \draw (4,-1.5) node[left] {$EA$};
+    \end{tikzpicture}
+    \caption{1D Truss}\label{fig:1dTruss}
+\end{figure}
+
 \noindent Strong form of the problem:
-\[
-\begin{array}{rcl}
-     -u''(x) = f(x)& \forall x\in [0,1] \\
-     u(0)=0& \\
-     u'(1)=0& \\     
-\end{array}
-\]
+
+
+\begin{equation}\label{eq:StrongForm}
+    \begin{aligned}
+        -u''(x) &= f(x)  & \forall x\in [0,1] \\
+        u(0)&=0\\
+        u'(1)&=0\\
+    \end{aligned}
+\end{equation}
+
+\noindent This equation can be used to model a 1D truss/bar with linear elastic properties.
+
 
 \noindent If we suppose that $u$ is a solution for the strong form, given any function $v$, it is also true that:
 \begin{equation*}
@@ -36,7 +85,7 @@
 
 \noindent For that integrals to be well defined, we assume that $u\in H^2([0,1])$, $v\in H^1([0,1])$ and $f\in L^2([0,1])$. Then, we integrate by parts:
 \begin{equation*}
-    -[u'(x)v(x)]_{x=0}^{1}-\int_0^1 u'(x)v(x)'=dx \int_0^1 f(x)v(x) dx \quad\forall v\in H^1([0,1])
+    -[u'(x)v(x)]_{x=0}^{x=1}-\int_0^1 u'(x)v(x)'=dx \int_0^1 f(x)v(x) dx \quad\forall v\in H^1([0,1])
 \end{equation*}
 \begin{equation*}
     -u'(1)v(1)+u'(0)v(0)+\int_0^1 u'(x)v(x)'=dx \int_0^1 f(x)v(x) dx \quad\forall v\in H^1([0,1])
@@ -49,36 +98,52 @@
 
 \noindent Using that functional space and given that u'(1)=0, we then arrive at the weak form of the problem:
 \begin{equation}
-    \int_0^1 u'(x)v(x)'=dx \int_0^1 f(x)v(x) dx \quad\forall v\in V
+    \int_0^1 u'(x)v'(x)dx= \int_0^1 f(x)v(x) dx \quad\forall v\in V
 \end{equation}
 
 \section{FEM with first order Lagrange elements}
 \noindent Solve:
 \begin{equation*}
-    Ac=b
+    \textbf{A}x=b
 \end{equation*}
 
 \noindent Where:
 \begin{equation*}
-    A=[a_{ij}]
+    \textbf{A}=[a_{ij}]
 \end{equation*}
 
-\begin{gather}
-     a_{ij}=\int_a^b \psi_j' \psi_i' dx \;\;\;\;\text{if } j\in\{ i-1,i,i+1\}  \\
+\begin{equation}
+\begin{gathered}
+     a_{ij}=\int_a^b \varphi_j' \varphi_i' dx \;\;\;\;\text{if } j\in\{ i-1,i,i+1\}  \\
      a_{ij}=0 \;\;\;\;\text{if } j\notin\{ i-1,i,i+1\} \\
-     b=[b_i], \quad b_{i}=\int_a^b f \psi_i dx \quad
+     b=[b_i], \quad b_{i}=\int_a^b f \varphi_i dx \quad
      i=1,...,N+1 \\
      b_1 = b_{N+1} = 0 
-\end{gather}
+\end{gathered}
+\end{equation}
 
 
-\noindent The functions $\psi_i$ are defined as:
-\[\psi_i= \left\{
+
+\noindent The functions $\varphi_i$ are defined as:
+\[\varphi_i= \left\{
 \begin{array}{rcl}
-\frac{x-x_{i-1}}{h}& \text{if } x\in [x_{i-1}, x_i]\\
-\frac{x_{i+1}-x}{h}& \text{if } x\in [x_{i}, x_{i+1}]\\
+\frac{x-x_{i-1}}{x_{i+1}-x_{i}}& \text{if } x\in [x_{i-1}, x_i]\\
+\frac{x_{i+1}-x}{x_{i+1}-x_{i}}& \text{if } x\in [x_{i}, x_{i+1}]\\
 0& \text{if } x\notin [x_{i-1}, x_{i+1}]
 \end{array}\right.\]
+
+\noindent The previous linear system can be assembled with the help of an element stiffness matrix [2x2] and an element force vector [2x1]. For the element $i$, which nodes are $[x_i,x_{i+1}]$, the element stiffness matrix and force vector is defined as follows.
+
+\begin{equation*}
+    \textbf{A}^e=[a_{lk}]=\int_{x_i}^{x_{i+1}} \varphi_{i-1+l}' \varphi_{i-1+k}' dx \quad
+     l,k=1,2  
+\end{equation*}
+
+\begin{equation*}
+    b^e=[b_{l}]=\int_{x_i}^{x_{i+1}} \varphi_{i-1+l} f dx \quad
+     l=1,2  
+\end{equation*}
+
 
 
 \end{document}
