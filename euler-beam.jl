@@ -17,10 +17,10 @@ end
 h = 0.01
 xspan = (0,1)
 bvp1 = BVProblem(beamEqt!, bc!, [0,0], xspan)
-sol1 = solve(bvp1, MIRK4(), dt = 0.005)
+sol1 = solve(bvp1, BS3(), dt = 0.005)
 plot(sol1)
 
 uEx(x) = -1/EJ .* M(x).*x.^2/2
-uEx2(x) = F/EJ * (0.5*x.^2-x.^3/6)
+uEx2(x) = -F/EJ * (0.5*x.^2-x.^3/6)
 plot!(uEx2)
 
