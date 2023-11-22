@@ -101,31 +101,31 @@
     \int_0^1 u'(x)v'(x)dx= \int_0^1 f(x)v(x) dx \quad\forall v\in V
 \end{equation}
 
-The model can be extened to take into consideration a diffusion coefficient $\beta$, a mass coefficient $\alpha$ and a inhomogeneous density $c(x)$
+The model can be extended to take into consideration a diffusion coefficient $\beta$, a mass coefficient $\alpha$, and an inhomogeneous density $c(x)$.
 
 \begin{equation}
     \frac{d}{dx}\bigg( c(x) \frac{d u(x)}{dx} \bigg) + \alpha \frac{d u(x)}{dx} + \beta u(x) = f(x)
 \end{equation}
-
-The derivation of weak form is analogous to the previous one, leading to the following result
+The derivation of the weak form is analogous to the previous one, leading to the following result:
 
 \begin{equation}
     \big(-K + \alpha D + \beta M\big) \mathbf{u} = \mathbf{F}
 \end{equation}
 
-where $K,D,M$ are the stiffness matrix, the diffusion matrix and the mass matrix, respectively. 
+where $K$, $D$, and $M$ are the stiffness matrix, the diffusion matrix, and the mass matrix, respectively. 
 
-\begin{gather*}
-    K_{ij} = \int_{\Omega} \frac{d \phi_i}{dx} \frac{d \phi_j}{dx} c(x) dx \\
-    D_{ij} = \int_{\Omega} \frac{d \phi_i}{dx} \phi_j dx \\
-    M_{ij} = \int_{\Omega} \phi_i \phi_j dx 
-\end{gather*}
+\begin{align*}
+    K_{ij} &= \int_{\Omega} \frac{d \phi_i}{dx} \frac{d \phi_j}{dx} c(x) \, dx \\
+    D_{ij} &= \int_{\Omega} \frac{d \phi_i}{dx} \phi_j \, dx \\
+    M_{ij} &= \int_{\Omega} \phi_i \phi_j \, dx 
+\end{align*}
 
-The force vector has the same expression as before
+The force vector has the same expression as before:
 
 \begin{equation}
-    F_i = \int_{\Omega} f(x) \phi_i dx
+    F_i = \int_{\Omega} f(x) \phi_i \, dx
 \end{equation}
+
 
 \section{FEM with first order Lagrange elements}
 \noindent Solve:
