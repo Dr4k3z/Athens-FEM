@@ -1,3 +1,5 @@
+#!/usr/bin/env julia
+
 # struct to hold single element
 struct Element
     p1::Float64
