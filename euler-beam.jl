@@ -30,6 +30,8 @@ end
 function bc!(residual,u,p,x)
     residual[1] = u[1][1]
     residual[2] = u[2][1]
+    residual[3] = u[3][end]
+    residual[4] = u[4][end]
 end
 
 x = range(0,1,100)
