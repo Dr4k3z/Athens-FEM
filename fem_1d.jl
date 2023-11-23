@@ -9,18 +9,22 @@ using BenchmarkTools
 #user defined libraries
 include("mesh.jl")
 
+function load(x)
+  if 0.4<=x<=0.5
+    return 1
+  else
+    return 0
+  end
+end
+
 function fem_1d(N)    
-    if (Bool(0)) print(" [fem_1d]:: input N = ", N, "\n") end 
-    
     #..Generate the mesh 
     Np1 = N+1; h = 1/N
     x = Vector(0:h:1) 
     mesh = StructArray{Element}((x[1:end-1], x[2:end], Vector(1:N), Vector(2:N+1)))
 
-    if (Bool(0)) print(" [fem_1d]:: mesh = ", mesh, "\n") end
-
     #..Set the source function 
-    fsource(x) = x*(x-1)
+    fsource(x) = 1
 
     #..Initialize global matrix and right-hand side value 
     f = zeros(Float64,Np1,1)
@@ -32,7 +36,6 @@ function fem_1d(N)
 
     #..Perform loop over elements and assemble global matrix and vector 
     @inbounds for i=1:N 
-        
       xl = mesh[i].p1
       xr = mesh[i].p2
       j  = mesh[i].e1
@@ -40,12 +43,11 @@ function fem_1d(N)
         
       floc = (xr-xl) * [fsource(xl), fsource(xr)];
       Aloc = (1/(xr-xl))*[1, -1, -1, 1]; 
-        
+      
       f[[j,k]] += floc 
       I[4*(i-1)+1:4*i] = [j, k, j, k]
       J[4*(i-1)+1:4*i] = [j, j, k, k]
       Avalues[4*(i-1)+1:4*i] = Aloc 
-        
     end
 
     A = sparse(I,J,Avalues)
@@ -56,7 +58,6 @@ function fem_1d(N)
 
     #..solve the linear system
     u = A \ f  
-    
     return x, u 
 end
 

@@ -7,7 +7,7 @@ F(x) = 1
 M(x) = 1-x #momentum
 
 E(x) = 1
-I(x) = 1
+I = 1
 
 function beamEqt!(du,u,p,x)
     du[1] = u[2]
