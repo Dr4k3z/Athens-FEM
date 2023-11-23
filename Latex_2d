@@ -36,7 +36,7 @@ With boundary conditions:
     \end{gathered}    
 \end{equation}
 
-We multiplicate or function with a test function $v$. And integrate over the domain. 
+We multiplicate our function with a test function $v$. And integrate over the domain. 
 
 \begin{equation}\label{eq:2D_PoissonInt}
     \begin{gathered}
