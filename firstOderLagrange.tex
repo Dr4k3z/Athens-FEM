@@ -158,22 +158,43 @@ The force vector has the same expression as before:
 0& \text{if } x\notin [x_{i-1}, x_{i+1}]
 \end{array}\right.\]
 
-\noindent The previous linear system can be assembled with the help of an element stiffness matrix [2x2] and an element force vector [2x1]. For the element $i$, which nodes are $[x_i,x_{i+1}]$, the element stiffness matrix and force vector is defined as follows.
+\noindent The previous linear system can be assembled with the help of an element stiffness matrix [2x2] and an element force vector [2x1]. For the element $i$, which nodes are $[x_i,x_{i+1}]$, the element stiffness matrix and force vector are defined as follows.
 
 \begin{equation*}
-    \textbf{A}^e=[a_{lk}]=\int_{x_i}^{x_{i+1}} \varphi_{i-1+l}' \varphi_{i-1+k}' dx \quad
+    {K}^e=[K^i_{lk}]=\int_{x_i}^{x_{i+1}} \varphi_{i-1+l}' \varphi_{i-1+k}' dx \quad
      l,k=1,2  
 \end{equation*}
 
 \begin{equation*}
-    b^e=[b_{l}]=\int_{x_i}^{x_{i+1}} \varphi_{i-1+l} f dx \quad
+    b^e=[b^i_{l}]=\int_{x_i}^{x_{i+1}} \varphi_{i-1+l} f dx \quad
      l=1,2  
 \end{equation*}
 
-\section{Euler-Bernoulli beam equation}
+\noindent The assembly of the stiffness matrix in global coordinates is:
+\begin{gather*}
+    K=\begin{pmatrix}
+        K_{11}^1 & K_{12}^1 & 0 & 0 & \cdots & 0\\
+        K_{21}^1 & K_{22}^1+K_{11}^2 & K_{12}^2 & 0 & \cdots & 0\\ 
+        0 & K_{21}^2 & K_{22}^2+K_{11}^3 & K_{12}^3 & \cdots & 0\\
+        \vdots & \vdots & \vdots & \vdots & \ddots & \vdots\\
+        0 & 0 & 0 & 0 & \cdots & K_{22}^N
+    \end{pmatrix}
+\end{gather*}
 
-\begin{equation}
-    \frac{d^2}{dx^2}\Big( c(x) \frac{d^2 u}{dx^2} \Big) + \beta \frac{du}{dx} + \alpha u(x)= f(x)
-\end{equation}
+\noindent And the assembly of $b$ terms has the structure:
+\begin{gather*}
+    b=\begin{pmatrix}
+        b_1^1\\b_2^1+b_1^2\\b_2^2+b_1^3\\ \vdots \\ b_2^N
+    \end{pmatrix}
+\end{gather*}
 
+\noindent As there is no mass matrix in this problem nor bound conditions to be added, we take $A=K$. And so, the FEM problem to solve is:
+\begin{gather*}
+    Ac=b
+\end{gather*}
+
+\noindent Which leads to the solution:
+\begin{equation*}
+    u^h=\sum\limits_{i=1}^{N+1} c_i\psi_i(x)
+\end{equation*}
 \end{document}
