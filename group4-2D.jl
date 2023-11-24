@@ -29,7 +29,7 @@ function generateMeshFile(resolution)
     gmsh.option.setNumber("General.Terminal", 1)
     gmsh.model.add("square")
     #..set mesh density parameter 
-    lc = 0.02
+    lc = resolution
     #..define four points via (x,y,z) coordinates 
     gmsh.model.geo.addPoint(0, 0, 0, lc, 1)
     gmsh.model.geo.addPoint(1.0, 0, 0, lc, 2)
