@@ -1,4 +1,9 @@
 using DifferentialEquations
+using LinearAlgebra
+using SparseArrays
+using Plots
+using WriteVTK
+using StaticArrays
 
 function set_initial_condition_1(x)
     A = 1.
@@ -13,11 +18,20 @@ function set_initial_speed(x)
     return A * sin((pi / l ) * x)
 end
      
-function source_function(x)
-    X0 = 40.0
-    σ = 0.8
-    A = 80.
-    return  - A * exp(-((x - X0)^2)/σ^2)
+function source_function(x,t)
+    #X0 = 40.0
+    #σ = 0.8
+    #A = 8000.
+    #return  - A * exp(-((x - X0)^2)/σ^2)
+
+    t0 = 0.1
+    delta = 0.001
+    if t<=t0 || t>t0+delta
+        return 0
+    else
+        return 1000000
+    end
+    #return 10000000
 end
 
 function matrix(n)
@@ -60,7 +74,7 @@ function biharmonic!(ddu,du,u,p,t)
     I = 117.8
     n = 81
     A = matrix(n)
-    ddu .=  A * u + (1/E*I) * source_function.(x)
+    ddu .=  A * u + (1/E*I) * source_function.(x,t)
 end
 
 N = 81
@@ -85,7 +99,7 @@ prob = SecondOrderODEProblem(biharmonic!,init_dt, init_t, tspan)
 # https://docs.sciml.ai/DiffEqDocs/stable/tutorials/advanced_ode_example/
 sol = DifferentialEquations.solve(prob,TRBDF2())
 
-Nt = 10 # number of time samples 
+Nt = 1000 # number of time samples 
 dt = (t_end - t_begin)/Nt 
 
 # Vector t holds 0 and is Nt+1 long 
@@ -97,28 +111,29 @@ for k=1:length(tvec)
   U[:,k] = sol(tvec[k])
 end 
 
-p1 = plot(U[1:N,1], label = "0s")
-plot!(U[1:N,2], label = "1s")
-plot!(U[1:N,3], label = "2s")
-plot!(U[1:N,4], label = "3s")
-xlabel!("x (m)")
-ylabel!("position(m)")
-title!("Downward deflection")
+# animate
+anim = @animate for i in 1:100
+    plot(U[1:N,i],ylim=(0.99999,1.00000001))
+end
 
-p2 = plot(U[1:N,5], label = "4s")
-plot!(U[1:N,6], label = "5s")
-plot!(U[1:N,7], label = "6s")
-plot!(U[1:N,8], label = "7s")
-xlabel!("x (m)")
-ylabel!("position(m)")
-title!("Oscillation of the deflection")
+gif(anim,fps=120)
 
-p3 = plot(U[1:N,9], label = "8s")
-plot!(U[1:N,10], label = "9s")
-plot!(U[1:N,11], label = "10s")
-xlabel!("x (m)")
-ylabel!("position(m)")
-title!("Return of the deflection")
+#plot(U[1:N,1],ylim=(0.99999,1.00001))
+#plot!(U[1:N,10],ylim=(0.99999,1.00001))
+#plot!(U[1:N,20],ylim=(0.99999,1.00001))
+#plot!(U[1:N,30],ylim=(0.99999,1.00001))
+#plot!(U[1:N,40],ylim=(0.99999,1.00001))
+#plot!(U[1:N,50],ylim=(0.99999,1.00001))
+#plot!(U[1:N,end],ylim=(0.99999,1.00001))
 
-
-plot(p1,p2,p3, size=(1500,1000), layout=(1,3))
+plot(U[1:N,1])
+plot!(U[1:N,10])
+plot!(U[1:N,20])
+plot!(U[1:N,30])
+plot!(U[1:N,40])
+plot!(U[1:N,50])
+plot!(U[1:N,60])
+plot!(U[1:N,70])
+plot!(U[1:N,80])
+plot!(U[1:N,90])
+plot!(U[1:N,100])
