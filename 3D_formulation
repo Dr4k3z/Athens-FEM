@@ -333,6 +333,14 @@ With these matrices, the system of equations can be calculated in a simple way.
     \begin{gathered}
         \textbf{S}=[S_{ij}]=\int_{\Omega^{l}}{\kappa \left(\textbf{J}^{-1}[\partial \varphi]_l\right)^{T}\left(\textbf{J}^{-1}[\partial \varphi]_l\right) |det(\textbf{J})|d\xi d\eta d\zeta}\\
         \textbf{M}=[M_{ij}]=\int_{\Omega^{l}}{\alpha [\varphi][\varphi]^T|det(\textbf{J})|d\xi d\eta d\zeta}\\
+        f=[f_i]=\int_{\Omega}{f(x(\xi,\eta,\zeta),y(\xi,\eta,\zeta),z(\xi,\eta,\zeta)) [\varphi] |det(\textbf{J})|d\xi d\eta d\zeta}\\
+        f=[f_i]=
+        |det(\textbf{J})|\int_{\Omega}{f(x(\xi,\eta,\zeta),y(\xi,\eta,\zeta),z(\xi,\eta,\zeta)) \begin{bmatrix}
+            1-\xi-\eta-\zeta\\
+        \xi\\
+        \eta\\
+        \zeta\\
+        \end{bmatrix} d\xi d\eta d\zeta}
     \end{gathered}
 \end{equation}
 
