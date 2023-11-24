@@ -1,0 +1,463 @@
+\documentclass{article}
+\usepackage[margin=0.9in]{geometry}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{mathdots}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+
+\title{Introduction into Finite Elements and Algorithms}
+\author{Group 3}
+\date{November 2023}
+
+
+\begin{document}
+
+\maketitle
+
+\noindent Given the bi-harmonic equation for the 1D problem:
+
+\[ (P) \left\{
+\begin{array}{rcl}
+u^{4)}=f \quad \text{in } [0,1]\\
+u(0)=0\\
+u'(0)=0\\
+u''(1)=0\\
+u'''(1)=0
+\end{array}
+\right.\]
+
+\noindent We approach the problem by defining the function $w=u''$, which lead us to the breakdown in the following problems:
+
+\[ (P1) \left\{
+\begin{array}{rcl}
+w''=f \quad \text{in } [0,1]\\
+w(1)=0\\
+w'(1)=0
+\end{array}
+\right.\]
+
+\[ (P2) \left\{
+\begin{array}{rcl}
+u''=w \quad \text{in } [0,1]\\
+u(0)=0\\
+u'(0)=0
+\end{array}
+\right.\]
+
+\paragraph{Weak form for (P1):}
+\begin{gather*}
+    w''=f \Rightarrow w''v=fv \quad \forall v\in V \Rightarrow \int_0^1 w''v \,dx=\int_0^1 fv \,dx\quad \forall v\in V
+\end{gather*}
+
+\noindent We now integrate the left side by parts:
+\begin{gather*}
+    [w'v]_{x=0}^{x=1}-\int_0^1 w'v'\, dx= \int_0^1 fv \,dx\quad \forall v\in V\\
+    w'(1)v(1)-w'(0)v(0)-\int_0^1 w'v'\, dx= \int_0^1 fv \,dx\quad \forall v\in V\\
+    w'(0)v(0)+\int_0^1 w'v'\, dx= \int_0^1 -fv \,dx\quad \forall v\in V\\
+\end{gather*}
+
+\paragraph{$1^{st}$ order Lagrange FEM for (P1):}
+\noindent Let $x_1, \, x_2,...,x_{N+1}$ be the nodes of the one-dimensional mesh. According to the first order report, the vector b is written as:
+\begin{gather*}
+    b=\begin{pmatrix}
+        b_1^1\\b_2^1+b_1^2\\b_2^2+b_1^3\\ \vdots \\ b_2^N
+    \end{pmatrix}, \quad b^i_{l}=\int_{x_i}^{x_{i+1}} \varphi_{i-1+l} f dx \quad
+     l=1; \quad 1\leq i \leq N
+\end{gather*}
+
+\noindent We approximate the result using the trapezoidal rule:
+\begin{gather*}
+    b^i_{l}=\int_{x_i}^{x_{i+1}} \varphi_{i-1+l} f dx=\frac{f(x_i)+f(x_{i+1})}{2h}
+\end{gather*}
+
+\noindent On the other hand, the stiffness matrix is given by the expression:
+\begin{gather*}
+    K=\begin{pmatrix}
+        K_{11}^1 & K_{12}^1 & 0 & 0 & \cdots & 0\\
+        K_{21}^1 & K_{22}^1+K_{11}^2 & K_{12}^2 & 0 & \cdots & 0\\ 
+        0 & K_{21}^2 & K_{22}^2+K_{11}^3 & K_{12}^3 & \cdots & 0\\
+        \vdots & \vdots & \vdots & \vdots & \ddots & \vdots\\
+        0 & 0 & 0 & 0 & \cdots & K_{22}^N
+    \end{pmatrix}
+\end{gather*}
+
+\noindent Where the coefficients $K_{lk}^1$ for $l,k=1,2$ and $1\leq i \leq N$ are defined as:
+\begin{gather*}
+    K^i_{lk}=\int_{x_i}^{x_{i+1}} \varphi_{i-1+l}' \varphi_{i-1+k}' dx= \int_{x_i}^{x_{i+1}} (-1)^l\frac{1}{h}(-1)^k\frac{1}{h}dx=\frac{(-1)^{l+k}}{h}
+\end{gather*}
+
+\noindent As a consequence,
+\begin{gather*}
+    K=\frac{1}{h}\begin{pmatrix}
+        1 & -1 & 0 & 0 & \cdots & 0\\
+        -1 & 1+1 & -1 & 0 & \cdots & 0\\ 
+        0 & -1 & 1+1 & -1 & \cdots & 0\\
+        \vdots & \vdots & \vdots & \vdots & \ddots & \vdots\\
+        0 & 0 & 0 & 0 & \cdots & 1
+    \end{pmatrix}=
+    \frac{1}{h}\begin{pmatrix}
+        1 & -1 & 0 & 0 & \cdots & 0\\
+        -1 & 2 & -1 & 0 & \cdots & 0\\ 
+        0 & -1 & 2 & -1 & \cdots & 0\\
+        \vdots & \vdots & \vdots & \vdots & \ddots & \vdots\\
+        0 & 0 & 0 & 0 & \cdots & 1
+    \end{pmatrix}
+\end{gather*}
+
+\noindent There is no mass matrix in the problem, so we take A=K. 
+
+% \noindent We shall express too the boundary conditions term in local coordinates:
+% \begin{gather*}
+%     w'(0)v(0)=\left( \begin{array}{cc}
+%          v_1^1 & v_2^1
+%     \end{array} \right)
+%     \left( \begin{array}{cc}
+%          {p_1^1}'(0) \\ {p_2^1}'(0)
+%     \end{array} \right)
+%     \left( \begin{array}{cc}
+%          p_1^1(0) & p_2^1(0)
+%     \end{array} \right)
+%     \left( \begin{array}{cc}
+%          w_1^1 \\ w_2^1
+%     \end{array} \right)= \\
+%     =\left( \begin{array}{cc}
+%          v_1^1 & v_2^1
+%     \end{array} \right)
+%     \left( \begin{array}{cc}
+%         {p_1^1}'(0) p_1^1(0) & {p_1^1}'(0) p_2^1(0) \\
+%          p_1^1(0) {p_2^1}'(0) & {p_2^1}'(0) p_2^1(0)
+%     \end{array} \right)
+%     \left( \begin{array}{cc}
+%          w_1^1 \\ w_2^1
+%     \end{array} \right)=
+%     \left( \begin{array}{cc}
+%          v_1^1 & v_2^1
+%     \end{array} \right)
+%     \left( \begin{array}{cc}
+%         -1 & 0 \\
+%          1 & 0
+%     \end{array} \right)
+%     \left( \begin{array}{cc}
+%          w_1^1 \\ w_2^1
+%     \end{array} \right)
+% \end{gather*}
+
+% \noindent Finally, we model the boundary term in global coordinates with the following matrix:
+% \begin{gather*}
+%     Q=\begin{pmatrix}
+%         -1 & 0 & 0 & \cdots & 0\\
+%         1 & 0 & 0 & \cdots & 0\\
+%         0 & 0 & 0 & \cdots & 0\\
+%         \vdots & \vdots & \vdots & \ddots & \vdots\\
+%         0 & 0 & 0 & \cdots & 0\\
+%     \end{pmatrix}
+% \end{gather*}
+
+% \noindent With that information, we can conclude that the matrix $A$ needed for the linear system $Ac=w$ is the following one:
+% \begin{gather*}
+%     \frac{1}{h}\begin{pmatrix}
+%         0 & -1 & 0 & 0 & \cdots & 0\\
+%         0 & 2 & -1 & 0 & \cdots & 0\\ 
+%         0 & -1 & 2 & -1 & \cdots & 0\\
+%         \vdots & \vdots & \vdots & \vdots & \ddots & \vdots\\
+%         0 & 0 & 0 & 0 & \cdots & 1
+%     \end{pmatrix}
+% \end{gather*}
+
+% \begin{gather*}
+%     K=[K_{ij}]_{ij}, \quad K_{ij}=\int_0^1 \psi_i'\psi_j'dx
+% \end{gather*}
+
+% \noindent Where the functions $\psi_i$ stand for the first order Lagrange elements shape functions in the element $E_i$. There is no mass matrix in this particular problem, although do we have the boundary conditions $w'(0)v(0)$. We also define:
+% \begin{gather*}
+%     b=[b_i]_{i}, \quad b_i=\int_0^1 -f\psi_i\, dx
+% \end{gather*}
+
+% \noindent We aim to express the FEM linear sistem in terms of local coordinates in each element. In this coordinates, the approximate solution can be written as:
+% \begin{gather*}
+%     {w^h}_{|_{Ei}}= w_1^i p_1^i+ w_2^i p_2^i = \left( \begin{array}{cc} p_1^i & p_2^i \end{array} \right) \left( \begin{array}{cc}
+%          w_1^i \\ w_2^i
+%     \end{array} \right)
+% \end{gather*}
+
+% \noindent Hence, we can rewrite de stiffness matrix in local coordinates for element $E_i$, $i\in\{1,..N\}$:
+% \begin{gather*}
+%     \int_{E_i} {w^h(x)}' {v^h(x)}'\, dx =\int_{E_i} \left( \begin{array}{cc}
+%          v_1^i & v_2^i 
+%     \end{array}  \right)
+%     \left( \begin{array}{cc}
+%          {p_1^i(x)}' {p_1^i(x)}' & {p_1^i(x)}' {p_2^i(x)}'  \\
+%          {p_1^i(x)}' {p_2^i(x)}' & {p_2^i(x)}' {p_2^i(x)}'
+%     \end{array} \right)
+%     \left( \begin{array}{cc}
+%          u_1^i \\
+%          u_2^i
+%     \end{array} \right) dx =\\
+%     = \left( \begin{array}{cc}
+%          v_1^i & v_2^i 
+%     \end{array}  \right) \left[  
+%     \int_{E_i} \left( \begin{array}{cc}
+%          {p_1^i(x)}' {p_1^i(x)}' & {p_1^i(x)}' {p_2^i(x)}'  \\
+%          {p_1^i(x)}' {p_2^i(x)}' & {p_2^i(x)}' {p_2^i(x)}'
+%     \end{array} \right) dx
+%     \right] \left( \begin{array}{cc}
+%          u_1^i \\
+%          u_2^i
+%     \end{array} \right)
+% \end{gather*}
+
+% \begin{gather*}
+%     K^i=[K^i_{ml}] \: m,l\in\{1,2\}, \quad K^i_{ml}=  \int_{E_i} {p_m^i}'(x) {p_l^i}'(x) \, dx
+% \end{gather*}
+
+% \noindent Proceeding in the same way, we arrive at the expression:
+% \begin{gather*}
+%     -\int_{E_i} f(x) v^h(x) \, dx = - \int_{E_i} f(x) \left( \begin{array}{cc}
+%          v_1^i & v_2^i
+%     \end{array} \right)
+%     \left( \begin{array}{cc}
+%          p_1^i(x) \\
+%          p_2^i(x)
+%     \end{array} \right) dx =
+%     \left( \begin{array}{cc}
+%          v_1^i & v_2^i
+%     \end{array} \right) \int_{E_i} -f(x)
+%     \left( \begin{array}{cc}
+%          p_1^i(x) \\
+%          p_2^i(x)
+%     \end{array} \right) dx
+% \end{gather*}
+
+% \noindent As a consequence:
+% \begin{gather*}
+%     b^i=[b_k^i]_{k} \, k\in\{ 1,2 \}, \quad b_k^i=\int_{E_i} -f(x)p_k^i(x) \, dx
+% \end{gather*}
+
+% \noindent Making use of the previously introduced change of variables, $x=\frac{2}{h}y+x_i$ , we migrate the element to the interval [-1,1]. The vector $b^i$ can be written as follows:
+% \begin{gather*}
+%     b_k^i=\frac{2}{h} \int_{-1}^1 -f\big(\frac{2}{h}y+x_i\big)(-1)^k \frac{1}{2}y \, dy = (-1)^{k+1}h \int_{-1}^1 f\big(\frac{2}{h}y+x_i\big)y\, dy\\
+%     b^i= \frac{1}{h} \int_{-1}^1 f\big(\frac{2}{h}x+x_i\big)x\, dx \left ( \begin{array}{cc}
+%         1 \\ -1  
+%     \end{array} \right)
+% \end{gather*}
+
+
+
+% \noindent We will now assembly the matrix of the FEM method. As we are using the first order Lagrange elements:
+% \begin{gather*}
+%     K=\begin{pmatrix}
+%          -1 & 2 & \cdots & 0 & 0 & \cdots & 0 & 0\\
+%          \cdots & \cdots & \ddots & \vdots & \vdots & \iddots & \cdots & \cdots \\
+%          0 & 0 & \cdots & 2 & -1 & \cdots & 0 & 0\\
+%          0 & 0 & \cdots & -1 & 2 & \cdots & 0 & 0\\
+%          \cdots & \cdots & \iddots & \vdots & \vdots & \ddots & \cdots & \cdots \\
+%          0 & 0 & \cdots & 0 & 0 & \cdots & 2 & -1\\
+%          0 & 0 & \cdots & 0 & 0 & \cdots & -1 & 1
+%     \end{pmatrix}
+% \end{gather*}
+
+% \begin{gather*}
+%     b=\frac{1}{h}\begin{pmatrix}
+%          \int_{-1}^1 f\big(\frac{2}{h}x+x_1\big)x\, dx\\
+%          \int_{-1}^1 f\big(\frac{2}{h}x+x_2\big)x\, dx-\int_{-1}^1 f\big(\frac{2}{h}x+x_1\big)x\, dx\\
+%          \int_{-1}^1 f\big(\frac{2}{h}x+x_3\big)x\, dx-\int_{-1}^1 f\big(\frac{2}{h}x+x_2\big)x\, dx\\
+%          \vdots \\
+%          \int_{-1}^1 f\big(\frac{2}{h}x+x_N\big)x\, dx- \int_{-1}^1 f\big(\frac{2}{h}x+x_{N-1}\big)x\, dx\\
+%          -\int_{-1}^1 f\big(\frac{2}{h}x+x_N\big)x\, dx
+%     \end{pmatrix}
+% \end{gather*}
+
+
+% \noindent We will now assembly the matrix of the FEM method. Due to the geometry of the problem with the first orden lagrangian elements, the change of matrix basis is:
+% \begin{gather*}
+%     \begin{pmatrix}
+%          u_1^i \\ u_2^i
+%     \end{pmatrix} =
+%     \begin{pmatrix}
+%          0 & 0 & \cdots & 1 & 0 & \cdots & 0 & 0\\
+%          0 & 0 & \cdots & 0 & 1 & \cdots & 0 & 0
+%     \end{pmatrix}
+%     \begin{pmatrix}
+%          u_1\\ u_2\\u_3\\ \vdots \\u_{N}\\u_{N+1} 
+%     \end{pmatrix}
+% \end{gather*}
+
+% \noindent We define:
+% \begin{gather*}
+%     W^i=\begin{pmatrix}
+%          0 & 0 & \cdots & 1 & 0 & \cdots & 0 & 0\\
+%          0 & 0 & \cdots & 0 & 1 & \cdots & 0 & 0
+%     \end{pmatrix}
+% \end{gather*}
+
+% \noindent Then, the stiffness matrix por the global coordinates is:
+% \begin{gather*}
+%     K=\sum\limits_{i=1}^{N} [W^i]^T K^i W^i= \sum\limits_{i=1}^{N}
+%     \begin{pmatrix}
+%          0 & 0\\ 0 & 0\\
+%          \vdots & \vdots\\
+%          0 & 1\\ 1 & 0\\
+%          \vdots & \vdots\\
+%          0 & 0\\ 0 & 0
+%     \end{pmatrix}
+%     \frac{1}{h}
+%     \begin{pmatrix}
+%         1&  -1\\
+%      -1& 1
+%     \end{pmatrix}
+%     \begin{pmatrix}
+%          0 & 0 & \cdots & 1 & 0 & \cdots & 0 & 0\\
+%          0 & 0 & \cdots & 0 & 1 & \cdots & 0 & 0
+%     \end{pmatrix} =\\
+%     = \frac{1}{h}\sum\limits_{i=1}^{N} \begin{pmatrix}
+%          0 & 0\\ 0 & 0\\
+%          \vdots & \vdots\\
+%          0 & 1\\ 1 & 0\\
+%          \vdots & \vdots\\
+%          0 & 0\\ 0 & 0
+%     \end{pmatrix}
+%     \begin{pmatrix}
+%          0 & 0 & \cdots & 1 & -1 & \cdots & 0 & 0\\
+%          0 & 0 & \cdots & -1 & 1 & \cdots & 0 & 0
+%     \end{pmatrix} = 
+%     \frac{1}{h}\sum\limits_{i=1}^{N}
+%     \begin{pmatrix}
+%          0 & 0 & \cdots & 0 & 0 & \cdots & 0 & 0\\
+%          0 & 0 & \cdots & 0 & 0 & \cdots & 0 & 0\\
+%          \cdots & \cdots & \ddots & \vdots & \vdots & \iddots & \cdots & \cdots \\
+%          0 & 0 & \cdots & 1 & -1 & \cdots & 0 & 0\\
+%          0 & 0 & \cdots & -1 & 1 & \cdots & 0 & 0\\
+%          \cdots & \cdots & \iddots & \vdots & \vdots & \ddots & \cdots & \cdots \\
+%          0 & 0 & \cdots & 0 & 0 & \cdots & 0 & 0\\
+%          0 & 0 & \cdots & 0 & 0 & \cdots & 0 & 0
+%     \end{pmatrix}=\\
+%     \\=\frac{1}{h}\begin{pmatrix}
+%          1 & -1 & \cdots & 0 & 0 & \cdots & 0 & 0\\
+%          -1 & 2 & \cdots & 0 & 0 & \cdots & 0 & 0\\
+%          \cdots & \cdots & \ddots & \vdots & \vdots & \iddots & \cdots & \cdots \\
+%          0 & 0 & \cdots & 2 & -1 & \cdots & 0 & 0\\
+%          0 & 0 & \cdots & -1 & 2 & \cdots & 0 & 0\\
+%          \cdots & \cdots & \iddots & \vdots & \vdots & \ddots & \cdots & \cdots \\
+%          0 & 0 & \cdots & 0 & 0 & \cdots & 2 & -1\\
+%          0 & 0 & \cdots & 0 & 0 & \cdots & -1 & 1
+%     \end{pmatrix}
+% \end{gather*}
+
+% \noindent Similarly, we can state:
+% \begin{gather*}
+%     b=\sum\limits_{i=1}^{N} [W^i]^T b^i W^i=\sum\limits_{i=1}^{N}
+%     \begin{pmatrix}
+%          0 & 0\\ 0 & 0\\
+%          \vdots & \vdots\\
+%          0 & 1\\ 1 & 0\\
+%          \vdots & \vdots\\
+%          0 & 0\\ 0 & 0
+%     \end{pmatrix}
+%     \frac{1}{h} \int_{-1}^1 f(x)x\, dx
+%     \begin{pmatrix}
+%         1 & -1
+%     \end{pmatrix}
+%     \begin{pmatrix}
+%          0 & 0 & \cdots & 1 & 0 & \cdots & 0 & 0\\
+%          0 & 0 & \cdots & 0 & 1 & \cdots & 0 & 0
+%     \end{pmatrix}=\\
+%     =\frac{1}{h} \int_{-1}^1 f(x)x\, dx\sum\limits_{i=1}^{N} 
+%     \begin{pmatrix}
+%          0 & 0\\ 0 & 0\\
+%          \vdots & \vdots\\
+%          0 & 1\\ 1 & 0\\
+%          \vdots & \vdots\\
+%          0 & 0\\ 0 & 0
+%     \end{pmatrix}
+%     \begin{pmatrix}
+%          0 & 0 & \cdots & 1 & -1 & \cdots & 0 & 0\\
+%     \end{pmatrix}
+% \end{gather*}
+
+\paragraph{Weak form for (P2):}
+\noindent As stated before, we approach the problem:\\
+\[ (P2) \left\{
+\begin{array}{rcl}
+u''=w \quad \text{in } [0,1]\\
+u(0)=0\\
+u'(0)=0
+\end{array}
+\right.\]
+
+\begin{gather*}
+    u''=w \Rightarrow u''v=w v \quad \forall v\in V \Rightarrow \int_0^1 u''v \,dx=\int_0^1 w v \,dx\quad \forall v\in V
+\end{gather*}
+
+\noindent We now integrate the left side by parts:
+\begin{gather*}
+    [u'v]_{x=0}^{x=1}-\int_0^1 u'v'\, dx= \int_0^1 w v \,dx\quad \forall v\in V\\
+    u'(1)v(1)-u'(0)v(0)-\int_0^1 u'v'\, dx= \int_0^1 w v \,dx\quad \forall v\in V\\
+    -u'(1)v(1)+\int_0^1 u'v'\, dx= \int_0^1 -w v \,dx\quad \forall v\in V\\
+\end{gather*}
+
+\paragraph{$1^{st}$ order Lagrange FEM for (P2):}
+\noindent Analogous to the (P1) case, there is no mass matrix, and the problem matrix is the matrix A given in (P1).
+% \[ \overline{K}^i=\frac{1}{h}\left( \begin{array}{cc}
+%      1&  -1\\
+%      -1& 1
+% \end{array} \right) \]
+
+% \noindent Taking $f=w$ in the previous case, we can also write:
+% \[
+% \overline{b}^i= \frac{1}{2} \int_{-1}^1 w(x)x\, dx \left ( \begin{array}{cc}
+%         1\\ -1  
+%     \end{array} \right)
+% \]
+
+% \noindent The last step is to properly write the boundary conditions. If the nodes are $\{ x_1,\, x_2,...,x_{N+1} \}$:
+% \begin{gather*}
+%     u'(1)v(1)=\left( \begin{array}{cc}
+%          v_1^{N+1} & v_2^{N+1}
+%     \end{array} \right)
+%     \left( \begin{array}{cc}
+%          {p_1^{N+1}}' \\ {p_2^{N+1}}'
+%     \end{array} \right)
+%     \left( \begin{array}{cc}
+%          p_1^{N+1} & p_2^{N+1}
+%     \end{array} \right)
+%     \left( \begin{array}{cc}
+%          u_1^{N+1} \\ u_2^{N+1}
+%     \end{array} \right)= \\
+%     =\left( \begin{array}{cc}
+%          v_1^{N+1} & v_2^{N+1}
+%     \end{array} \right)
+%     \left( \begin{array}{cc}
+%         {p_1^{N+1}}' p_1^{N+1} & {p_1^{N+1}}' p_2^{N+1} \\
+%          p_1^{N+1} {p_2^{N+1}}' & {p_2^{N+1}}' p_2^{N+1}
+%     \end{array} \right)
+%     \left( \begin{array}{cc}
+%          u_1^{N+1} \\ u_2^{N+1}
+%     \end{array} \right)
+% \end{gather*}
+
+\paragraph{Coupling of (P1) and (P2):}
+
+\noindent We reduced the approximation of problems (P1) and (P2) to solving the two linear systems:
+\begin{gather*}
+    Aw=b\\
+    Au=w \Rightarrow Au-Iw=0
+\end{gather*}
+
+\noindent This is equivalent to the formulation:
+\begin{gather*}
+    \begin{pmatrix}
+        A &-I\\
+        0 & A
+    \end{pmatrix}
+    \begin{pmatrix}
+        u \\ w
+    \end{pmatrix}
+    = \begin{pmatrix}
+        0 \\ b
+    \end{pmatrix}
+\end{gather*}
+
+\noindent We can then find $(u \: w)^T$ by solving the linear system, and then extract $u$ from the solution vector, finding the approximate solution of the problem (P).
+
+\end{document}
