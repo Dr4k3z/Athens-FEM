@@ -313,7 +313,9 @@ function buildMatandVec(resolution)
         A = (S - M)
         boundarySetup(A, f)
     end
-    return elapsed_time_assemblying;
+    returning = [A,f,elapsed_time_assemblying]
+
+    return returning;
 end
 
 
