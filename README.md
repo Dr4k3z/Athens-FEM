@@ -6,19 +6,17 @@ This repository contains materials and resources related to the Finite Elements 
 
 ## Course Overview
 - **Professor:** Domenico Layahe
-- **University:** Delft University
-- **Topic:** Finite Elements Method
-- **Focus:** Study of the behavior of the Euler-Bernoulli beam equation using Julia
+- **University:** Technical University of Delft
+- **Topic:** FEM for vibrating structures
 
 ## Course Description
-The Finite Elements course delves into the fundamental principles and applications of the Finite Elements Method. Led by Professor Domenico Layahe, this course specifically focuses on the study of the Euler-Bernoulli beam equation using the Julia programming language.
+The Finite Elements course delves into the fundamental principles and applications of the Finite Elements Method. Led by Professor Domenico Layahe, this course has covered the mathematical derivation of the weak form, the design of a 2-dimensional mesh and the development of algorithms to solve linear systems and differential equations. In particular, we have used the Julia programming language as a tool to carry out most computations. 
 
 ## Contents
 This repository contains:
-- Lecture notes
-- Code examples and assignments
-- Julia scripts for simulating the behavior of the Euler-Bernoulli beam equation
-- Supplementary materials and resources
+- LaTeX notes on the derivation of the weak form for Poisson and Euler-Bernoulli equation
+- Julia code that implement and solve the problems mentioned above
+- Other supplementary scripts in other languages
 
 ## How to Use
 Feel free to explore the contents of this repository:
