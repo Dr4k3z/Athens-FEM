@@ -294,7 +294,7 @@ end
 #GR.trisurf(xnode,ynode,u)
 
 
-function buildMatandVec(resolution)
+function buildMatandVec_2D(resolution)
     
     generateMeshFile(resolution)
     xnode, ynode, node_ids, node_coord, nelements, element_types, element_ids, element_connectivity, nnodes = meshInfoSetup()
@@ -305,11 +305,11 @@ function buildMatandVec(resolution)
     
     elapsed_time_assemblying = @elapsed begin
         S = genStiffMat(cvalues, nelements, element_connectivity, xnode, ynode)
-        @time genStiffMat(cvalues, nelements, element_connectivity, xnode, ynode)
+        #@time genStiffMat(cvalues, nelements, element_connectivity, xnode, ynode)
         M = genMassMat(nelements, element_connectivity, xnode, ynode)
-        @time genMassMat(nelements, element_connectivity, xnode, ynode)
+        #@time genMassMat(nelements, element_connectivity, xnode, ynode)
         f = genVector(fvalues, nelements, nnodes, element_connectivity, xnode, ynode)
-        @time genVector(fvalues, nelements, nnodes, element_connectivity, xnode, ynode)
+        #@time genVector(fvalues, nelements, nnodes, element_connectivity, xnode, ynode)
         A = (S - M)
         boundarySetup(A, f)
     end
