@@ -18,6 +18,9 @@ This repository contains:
 - Julia code that implement and solve the problems mentioned above
 - Other supplementary scripts in other languages
 
+- ![2D Poisson Equation Image](poiss2d.png) (Example: 2D Poisson Equation)
+
+
 ## How to Use
 Feel free to explore the contents of this repository:
 - Clone this repository to your local machine using `git clone`.
